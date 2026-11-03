@@ -153,6 +153,32 @@ body {
 }
 #music-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(232,200,122,.5); }
 
+/* Pulse the music bar when autoplay is blocked (mobile) */
+@keyframes musicBarPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(232,200,122,.15), 0 0 0 0 rgba(232,200,122,.6); }
+  50% { box-shadow: 0 4px 20px rgba(232,200,122,.4), 0 0 0 10px rgba(232,200,122,0); }
+}
+#music-bar.needs-play {
+  animation: musicBarPulse 1.6s ease-in-out infinite;
+  opacity: 1 !important;
+}
+#music-bar.needs-play::after {
+  content: 'اضغط للموسيقى ♪';
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,8,15,.92);
+  color: var(--gold);
+  font-family: var(--font-ar);
+  font-size: .75rem;
+  white-space: nowrap;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--gold-dark);
+  pointer-events: none;
+}
+
 /* ══════════════════════════════════════════
    INTRO / ENVELOPE SCREEN
 ══════════════════════════════════════════ */
@@ -950,8 +976,8 @@ footer {
   <span class="music-icon paused" id="music-icon">🎵</span>
   <button id="music-btn" aria-label="تشغيل/إيقاف الموسيقى" title="تشغيل/إيقاف الموسيقى">▶</button>
 </div>
-<audio id="wedding-audio" loop preload="auto">
-  <source src="WhatsApp Audio 2026-11-03 at 9.47.33 PM.mp3" type="audio/mpeg">
+<audio id="wedding-audio" loop preload="auto" playsinline>
+  <source src="zaffa.mp3" type="audio/mpeg">
 </audio>
 
 <!-- ═══════════════════════════════ INTRO SCREEN ═══════════════════════════════ -->
@@ -1194,6 +1220,31 @@ footer {
 })();
 
 /* ═══════════════════════════════════════
+   MUSIC PLAYER — declared early so openInvite can use it
+═══════════════════════════════════════ */
+var audio = document.getElementById('wedding-audio');
+var musicBtn = document.getElementById('music-btn');
+var musicIcon = document.getElementById('music-icon');
+var isPlaying = false;
+
+musicBtn.addEventListener('click', function() {
+  if (isPlaying) {
+    audio.pause();
+    musicBtn.textContent = '▶';
+    musicIcon.classList.add('paused');
+    isPlaying = false;
+  } else {
+    audio.play().then(function() {
+      musicBtn.textContent = '⏸';
+      musicIcon.classList.remove('paused');
+      isPlaying = true;
+    }).catch(function() {
+      // autoplay blocked, that's fine
+    });
+  }
+});
+
+/* ═══════════════════════════════════════
    ENVELOPE / INTRO
 ═══════════════════════════════════════ */
 var intro = document.getElementById('intro');
@@ -1205,14 +1256,18 @@ function openInvite() {
   opened = true;
   envelope.classList.add('open');
 
-  // 🎵 Auto-play music immediately on user gesture (envelope tap)
-  audio.play().then(function() {
-    musicBtn.textContent = '⏸';
-    musicIcon.classList.remove('paused');
-    isPlaying = true;
-  }).catch(function() {
-    // autoplay blocked — user can tap the music button manually
-  });
+  // 🎵 Try to auto-play on user gesture (envelope tap)
+  var playPromise = audio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(function() {
+      musicBtn.textContent = '⏸';
+      musicIcon.classList.remove('paused');
+      isPlaying = true;
+    }).catch(function() {
+      // Autoplay blocked — show a pulse on the music button to prompt user
+      document.getElementById('music-bar').classList.add('needs-play');
+    });
+  }
 
   // After envelope animation completes, fade out intro & reveal main content
   setTimeout(function() {
@@ -1270,30 +1325,7 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-/* ═══════════════════════════════════════
-   MUSIC PLAYER
-═══════════════════════════════════════ */
-var audio = document.getElementById('wedding-audio');
-var musicBtn = document.getElementById('music-btn');
-var musicIcon = document.getElementById('music-icon');
-var isPlaying = false;
-
-musicBtn.addEventListener('click', function() {
-  if (isPlaying) {
-    audio.pause();
-    musicBtn.textContent = '▶';
-    musicIcon.classList.add('paused');
-    isPlaying = false;
-  } else {
-    audio.play().then(function() {
-      musicBtn.textContent = '⏸';
-      musicIcon.classList.remove('paused');
-      isPlaying = true;
-    }).catch(function() {
-      // autoplay blocked, that's fine
-    });
-  }
-});
+/* music player vars & listeners are declared above, before openInvite */
 
 /* ═══════════════════════════════════════
    PARTICLES CANVAS — OPTIMIZED
