@@ -180,8 +180,67 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   INTRO / ENVELOPE SCREEN
+   VENUE PHOTO CARD
 ══════════════════════════════════════════ */
+.venue-photo-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 18px 0 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(232,200,122,.1);
+}
+.venue-photo-wrap img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  transition: transform .6s ease;
+}
+.venue-photo-wrap:hover img { transform: scale(1.04); }
+.venue-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(13,5,8,.88) 0%, rgba(13,5,8,.3) 55%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px 20px;
+  pointer-events: none;
+}
+.venue-photo-name {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  color: var(--gold-light);
+  text-shadow: 0 2px 12px rgba(0,0,0,.8);
+  margin-bottom: 4px;
+}
+.venue-photo-sub {
+  font-family: var(--font-ar);
+  font-size: .82rem;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+.couple-emoji-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 14px 0 6px;
+  font-size: 1.6rem;
+  animation: heartBeat 2s ease-in-out infinite;
+}
+.couple-emoji-label {
+  font-family: var(--font-ar);
+  font-size: .85rem;
+  color: var(--rose-light);
+  text-align: center;
+  margin-bottom: 14px;
+  opacity: .85;
+}
+
 #intro {
   position: fixed;
   inset: 0;
@@ -1148,8 +1207,22 @@ footer {
       <div class="card rv" data-delay="2">
         <div class="card-icon">📍</div>
         <h3>المكان</h3>
-        <p>موقع حفل الزفاف<br>اضغط لفتح الخريطة</p>
-        <div style="width:100%;border-radius:14px;overflow:hidden;margin:16px 0 8px;border:1px solid var(--border);">
+
+        <!-- Couple Emoji Bar -->
+        <div class="couple-emoji-bar">🤵 ♥ 👰</div>
+        <div class="couple-emoji-label">سيد &amp; S الفوال · ليلة العمر</div>
+
+        <!-- Venue Photo -->
+        <div class="venue-photo-wrap">
+          <img src="venue.jpg" alt="قاعة حفل الزفاف" loading="lazy">
+          <div class="venue-photo-overlay">
+            <div class="venue-photo-name">✦ قاعة حفل الزفاف ✦</div>
+            <div class="venue-photo-sub">الثلاثاء · ١٧ نوفمبر ٢٠٢٦ · الساعة ٧:٠٠ مساءً</div>
+          </div>
+        </div>
+
+        <p style="margin-bottom:14px;">موقع حفل الزفاف<br><span style="font-size:.85rem;color:var(--muted);">اضغط لفتح الخريطة</span></p>
+        <div style="width:100%;border-radius:14px;overflow:hidden;margin:0 0 14px;border:1px solid var(--border);">
           <iframe
             src="https://maps.google.com/maps?q=30.0594,31.2358&z=15&output=embed"
             width="100%" height="180" style="border:0;display:block;"
